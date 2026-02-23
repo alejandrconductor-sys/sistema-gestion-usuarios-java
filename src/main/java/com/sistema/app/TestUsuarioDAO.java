@@ -10,7 +10,7 @@ public class TestUsuarioDAO {
 
         UsuarioDAO usuarioDAO = new UsuarioDAO();
 
-        List<Usuario> usuarios = usuarioDAO.listarUsuarios();
+        List<Usuario> usuarios = usuarioDAO.listarUsuario();
 
         if (usuarios.isEmpty()) {
             System.out.println("⚠️ No hay usuarios registrados.");

@@ -4,8 +4,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Conexion {
-    private static final String URL =
-            "jdbc:mariadb://localhost:3306/sistema_gestion";
+    private static final String URL = "jdbc:mariadb://localhost:3306/sistema_gestion";
     private static final String USER = "SistemaRRHH";
     private static final String PASSWORD = "Rrhh12345";
 

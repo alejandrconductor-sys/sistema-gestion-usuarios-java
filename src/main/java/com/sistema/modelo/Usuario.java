@@ -4,12 +4,14 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(int id, String nombre, String email, String password, boolean activo) {
+    public Usuario(Integer id, String nombre, String apellido, String email, String estado, Rol rol, String password) {
         this.id = id;
         this.nombre = nombre;
+        this.apellido=apellido;
         this.email = email;
-        this.password = password;
-        this.activo = activo;
+        this.estado=estado;
+        this.rol=rol;
+        this.password=password;
     }
 
     // Getters y Setters
@@ -30,11 +32,11 @@ public class Usuario {
     }
 
     public String getApellido() {
-        return nombre;
+        return apellido;
     }
 
-    public void setApellido(String nombre) {
-        this.nombre = nombre;
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 
     public String getEmail() {
@@ -53,18 +55,32 @@ public class Usuario {
         this.password = password;
     }
 
-    public boolean isActivo() {
-        return activo;
+    public String getEstado() {
+        return estado;
     }
 
-    public void setActivo(boolean activo) {
-        this.activo = activo;
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
-    private int id;
+    public Rol getRol() {
+        return rol;
+    }
+
+    public void setRol(Rol rol) {
+        this.rol = rol;
+    }
+
+    public String toString(){
+        return nombre+" - "+email+"(" +rol+ ")";
+    }
+
+    private Integer id;
     private String nombre;
+    private String apellido;
     private String email;
     private String password;
-    private boolean activo;
-
+    private String estado;
+    private Rol rol;
+    
 }
