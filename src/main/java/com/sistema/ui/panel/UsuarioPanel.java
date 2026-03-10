@@ -5,22 +5,26 @@ import com.sistema.ui.dialog.UsuarioDialog;
 import com.sistema.ui.table.UsuarioTableModel;
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class UsuarioPanel extends JPanel {
 
-    private UsuarioTableModel tableModel;
-    private JTable tabla;
+    public UsuarioPanel(Frame owner, Usuario usuarioLogueado) {
 
-    public UsuarioPanel(Frame owner) {
+        this.usuarioLogueado = usuarioLogueado;
+
         setLayout(new BorderLayout(10, 10));
         inicializarComponentes(owner);
+        aplicarPermisos();
     }
 
     private void inicializarComponentes(Frame owner) {
 
-        tableModel = new UsuarioTableModel(
-                UsuarioServicio.getInstancia().listar()
-        );
+        List<Usuario> usuarios =
+                UsuarioServicio.getInstancia()
+                        .listarSegunRol(usuarioLogueado);
+
+        tableModel = new UsuarioTableModel(usuarios);
 
         tabla = new JTable(tableModel);
         tabla.setFillsViewportHeight(true);
@@ -31,77 +35,67 @@ public class UsuarioPanel extends JPanel {
     }
 
     private JPanel crearPanelBotones(Frame owner) {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JButton btnNuevo = new JButton("Nuevo Usuario");
-        JButton btnEditar = new JButton("Editar Usuario");
-        JButton btnEliminar = new JButton("Eliminar Usuario");
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
 
-        //Nuevo
+        btnNuevo = new JButton("Nuevo Usuario");
+        btnEditar = new JButton("Editar Usuario");
+
+        // NUEVO
+
         btnNuevo.addActionListener(e -> {
-            UsuarioDialog dialog =new UsuarioDialog(owner);
-            dialog.setVisible(true);
-            refrescarTabla();
-        });
-
-        // EDITAR
-       btnEditar.addActionListener(e -> {
-
-            int fila = tabla.getSelectedRow();
-
-        if (fila == -1) {
-            JOptionPane.showMessageDialog(this, "Seleccione un usuario para editar.",
-            "Aviso",
-            JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        Usuario usuario = tableModel.getUsuarioEn(fila);
-
-        UsuarioDialog dialog = new UsuarioDialog(owner, usuario); // constructor nuevo
+        UsuarioDialog dialog = new UsuarioDialog(owner, usuarioLogueado);
         dialog.setVisible(true);
         refrescarTabla();
         });
 
-        // ELIMINAR
-        btnEliminar.addActionListener(e -> {
+        // EDITAR
+        btnEditar.addActionListener(e -> {
 
             int fila = tabla.getSelectedRow();
 
             if (fila == -1) {
-                JOptionPane.showMessageDialog(this, "Seleccione un usuario para eliminar.",
-                "Aviso",
-                JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "¿Está seguro de eliminar el usuario?",
-                "Confirmar",
-                JOptionPane.YES_NO_OPTION);
-
-        if (confirm == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(this,
+                        "Seleccione un usuario para editar.",
+                        "Aviso",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
             Usuario usuario = tableModel.getUsuarioEn(fila);
 
-            UsuarioServicio.getInstancia()
-                    .eliminar(usuario.getIdUsuario());
+            UsuarioDialog dialog =
+                    new UsuarioDialog(owner, usuario, usuarioLogueado);
 
+            dialog.setVisible(true);
             refrescarTabla();
-        }
-    });
+        });
 
-    panel.add(btnNuevo);
-    panel.add(btnEditar);
-    panel.add(btnEliminar);
+        panel.add(btnNuevo);
+        panel.add(btnEditar);
 
-    return panel;
-}
-
+        return panel;
+    }
 
     private void refrescarTabla() {
-        tableModel.actualizarDatos(
-                UsuarioServicio.getInstancia().listar()
-        );
+        if (tableModel != null) {
+            List<Usuario> usuarios = UsuarioServicio.getInstancia().listarSegunRol(usuarioLogueado);
+            tableModel.actualizarDatos(usuarios);
+        }
     }
+
+    // 🔐 CONTROL DE BOTONES POR ROL
+    private void aplicarPermisos() {
+
+        String rol = usuarioLogueado.getRol().getNombre();
+
+        if (rol.equals("USUARIO")) {
+            btnNuevo.setVisible(false);
+        }
+    }
+
+    private Usuario usuarioLogueado;
+    private UsuarioTableModel tableModel;
+    private JTable tabla;
+    private JButton btnNuevo, btnEditar;
 }

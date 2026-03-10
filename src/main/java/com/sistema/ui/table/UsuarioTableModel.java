@@ -5,7 +5,7 @@ import java.util.List;
 
 public class UsuarioTableModel extends AbstractTableModel {
 
-    private final String[] columnas = {"ID", "Nombre", "Email", "Rol"};
+    private final String[] columnas = {"ID", "Nombre", "Email", "Estado", "Rol"};
     private List<Usuario> usuarios;
 
     public UsuarioTableModel(List<Usuario> usuarios) {
@@ -24,23 +24,24 @@ public class UsuarioTableModel extends AbstractTableModel {
         return columnas[column];
     }
 
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        Usuario u = usuarios.get(rowIndex);
+public Object getValueAt(int rowIndex, int columnIndex) {
+    Usuario u = usuarios.get(rowIndex);
 
-        switch (columnIndex) {
-            case 0:
-                return u.getIdUsuario();
-            case 1:
-                return u.getNombre();
-            case 2:
-                return u.getEmail();
-            case 3:
-                return u.getRol();
-            default:
-                return null;
-        }
+    switch (columnIndex) {
+        case 0:
+            return u.getIdUsuario();
+        case 1:
+            return u.getNombre();
+        case 2:
+            return u.getEmail();
+        case 3:
+            return u.getEstado(); 
+        case 4:
+            return u.getRol().getNombre();// mostrar nombre
+        default:
+            return null;
     }
-
+}
     public void actualizarDatos(List<Usuario> nuevosUsuarios) {
         this.usuarios = nuevosUsuarios;
         fireTableDataChanged();

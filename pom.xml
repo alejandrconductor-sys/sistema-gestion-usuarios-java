@@ -3,25 +3,50 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.sistema</groupId>              <!-- Dueño del proyecto -->
-    <artifactId>sistema-gestion</artifactId>    <!-- Nombre del proyecto -->
+
+    <groupId>com.sistema</groupId>
+    <artifactId>sistema-gestion</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-        <!-- Carpeta del proyecto -->
+
     <name>sistema-gestion</name>
-    <dependencies>          <!-- AQUI DECLARAMOS LAS LIBRERIAS EXTERNAS -->
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
+    <dependencies>
         <!-- MariaDB Driver -->
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <version>3.3.3</version>
         </dependency>
-        <!-- JUnit (tests) -->
+
+        <!-- JUnit para tests -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- SLF4J + Logback para logging -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.4.11</version>
+        </dependency>
     </dependencies>
+    <build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.11.0</version>
+        </plugin>
+    </plugins>
+</build>
+
 </project>

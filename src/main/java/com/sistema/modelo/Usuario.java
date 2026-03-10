@@ -1,10 +1,12 @@
 package com.sistema.modelo;
+import java.time.LocalDateTime;
+
 public class Usuario {
 
     public Usuario() {
     }
 
-    public Usuario(Integer id, String nombre, String apellido, String email, String estado, Rol rol, String password) {
+    public Usuario(Integer id, String nombre, String apellido, String email, EstadoUsuario estado, Rol rol, String password) {
         this.id = id;
         this.nombre = nombre;
         this.apellido=apellido;
@@ -55,13 +57,29 @@ public class Usuario {
         this.password = password;
     }
 
-    public String getEstado() {
+    public EstadoUsuario getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(EstadoUsuario estado) {
         this.estado = estado;
     }
+
+    public Integer getAprobadoPor() {
+        return aprobadoPor;
+    }
+
+    public void setAprobadoPor(Integer aprobadoPor) {
+        this.aprobadoPor = aprobadoPor;
+    }
+
+    public LocalDateTime getFechaAprobacion() {
+        return fechaAprobacion;
+    }
+
+    public void setFechaAprobacion(LocalDateTime fechaAprobacion) {
+        this.fechaAprobacion = fechaAprobacion;
+    }       
 
     public Rol getRol() {
         return rol;
@@ -80,7 +98,9 @@ public class Usuario {
     private String apellido;
     private String email;
     private String password;
-    private String estado;
     private Rol rol;
+    private EstadoUsuario estado;
+    private Integer aprobadoPor;
+    private LocalDateTime fechaAprobacion;
     
 }
