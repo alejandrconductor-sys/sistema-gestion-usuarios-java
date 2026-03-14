@@ -1,49 +1,91 @@
-# Sistema de Gestión de Usuarios - Java
+# User Management System - Java
 
-Proyecto desarrollado en Java orientado a la gestión de usuarios para el área de Recursos Humanos.
+User Management System developed in Java, designed for Human Resources departments to manage users, roles and account states within an organization.
 
-## Descripción
+The project demonstrates the implementation of Object-Oriented Programming principles, a layered architecture and database persistence using SQL.
 
-Este sistema permite administrar usuarios dentro de una organización, incluyendo registro, gestión de roles y control de estados de cuenta.
+---
 
-El proyecto fue desarrollado aplicando programación orientada a objetos y una arquitectura por capas que separa la interfaz de usuario, la lógica de negocio y el acceso a datos.
-
-## Tecnologías utilizadas
+## Technologies
 
 - Java
 - JDBC
-- SQL
 - MariaDB
+- SQL
+- Swing (GUI)
 - Git
 - Linux (Ubuntu)
 - Visual Studio Code
 
-## Arquitectura del sistema
+---
 
-El sistema está estructurado en diferentes capas:
+## System Architecture
 
-- **Interfaz gráfica (Swing)**  
-- **Servicios / lógica de negocio**  
-- **Acceso a datos (DAO)**  
-- **Base de datos relacional**
+The system follows a layered architecture that separates responsibilities across different components:
 
-Esto permite mantener el código organizado, escalable y fácil de mantener.
+Presentation Layer  
+- Java Swing graphical interface  
+- User interaction and event handling
 
-## Funcionalidades principales
+Business Logic Layer  
+- Service classes responsible for application logic
 
-- Registro de usuarios
-- Gestión de roles
-- Activación y desactivación de usuarios
-- Persistencia de datos en base de datos SQL
-- Interfaz gráfica para administración
+Data Access Layer (DAO)  
+- Database communication through JDBC
 
-## Demostración del sistema
+Database  
+- Relational database implemented in MariaDB using SQL
 
-Video demostración del proyecto:
+This architecture improves maintainability, scalability and code organization.
+
+---
+
+## Features
+
+- User registration
+- User management
+- Role-based access control
+- User activation and deactivation
+- Secure login system
+- SQL database persistence
+- Graphical user interface for administration
+
+---
+
+## Project Structure
+
+src/
+│
+├── modelo  
+│   └── Usuario.java
+│
+├── servicio  
+│   └── UsuarioServicio.java
+│
+├── dao  
+│   └── UsuarioDAO.java
+│
+├── conexion  
+│   └── ConexionBD.java
+│
+├── ui  
+│   ├── LoginFrame.java
+│   ├── MenuPrincipalFrame.java
+│   └── GestionUsuariosDialog.java
+│
+└── Main.java
+
+---
+
+## System Demonstration
+
+Video demonstration of the system:
 
 https://www.youtube.com/watch?v=jih3bNQ8UdI
 
-## Autor
+---
+
+## Author
 
 Rafael Márquez  
 Junior Java Developer
