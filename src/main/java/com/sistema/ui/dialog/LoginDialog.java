@@ -1,5 +1,4 @@
 package com.sistema.ui.dialog;
-
 import java.awt.*;
 import javax.swing.*;
 import com.sistema.modelo.EstadoUsuario;

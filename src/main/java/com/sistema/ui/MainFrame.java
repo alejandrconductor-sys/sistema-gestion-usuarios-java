@@ -1,5 +1,4 @@
 package com.sistema.ui;
-
 import javax.swing.*;
 import java.awt.*;
 import com.sistema.modelo.Usuario;
@@ -41,7 +40,7 @@ public class MainFrame extends JFrame {
 
         setJMenuBar(menuBar);
 
-        // Acción dinámica iniciar / cerrar sesión
+        // Acción cerrar sesión
         menuItemSesion.addActionListener(e -> {
             if (usuarioLogueado == null) {
                 iniciarSesion();

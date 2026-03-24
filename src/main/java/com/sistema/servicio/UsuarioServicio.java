@@ -47,6 +47,7 @@ public class UsuarioServicio {
 
         usuarioExistente.setNombre(usuarioEditado.getNombre());
         usuarioExistente.setApellido(usuarioEditado.getApellido());
+        
         // Control de roles
         if (rolEditor.equals("ADMIN")) {
             usuarioExistente.setEstado(usuarioEditado.getEstado());

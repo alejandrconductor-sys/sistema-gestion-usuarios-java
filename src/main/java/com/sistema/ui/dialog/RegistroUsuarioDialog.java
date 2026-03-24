@@ -1,5 +1,4 @@
 package com.sistema.ui.dialog;
-
 import javax.swing.*;
 import java.awt.*;
 import com.sistema.servicio.UsuarioServicio;
