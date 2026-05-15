@@ -98,16 +98,15 @@ public class PanelPrincipal extends JPanel {
             "https://www.youtube.com/watch?v=jih3bNQ8UdI"
         ));
 
-        // TEMPORALES HASTA SUBIR VIDEOS
-        btnUbuntu.addActionListener(e ->
-            JOptionPane.showMessageDialog(this,
-                "Video Ubuntu v1.1 próximamente disponible.")
-        );
+        btnUbuntu.addActionListener(e -> abrirEnlace(
+            "https://youtu.be/pkwZILdB7-Y?si=DyOZ5_8fZtCsk9r0"
+        ));
+        
 
-        btnWindows.addActionListener(e ->
-            JOptionPane.showMessageDialog(this,
-                "Video Windows v1.1 próximamente disponible.")
-        );
+        btnWindows.addActionListener(e -> abrirEnlace(
+            "https://youtu.be/rSWgHgdI0ZM?si=A5jFfastGb-ru-uS"
+        ));
+        
 
         // =========================
         // AGREGAR BOTONES
