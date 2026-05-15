@@ -13,3 +13,8 @@ public class SistemaGestionApp {
         });
     }
 }
+
+                        /** Sistema de Gestión de Usuarios
+                                Java | Swing | SQL | Git
+                                    Rafael Marquez **/
+

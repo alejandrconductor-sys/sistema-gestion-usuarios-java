@@ -68,7 +68,7 @@ public class GestionUsuariosDialog extends JDialog {
         return panel;
     }
     
-    private void cargarUsuariosEnTabla() {
+    private void cargarUsuariosEnTabla() {// Carga Dinamica desde el Servicio
 
         modeloTabla.setRowCount(0);
 
@@ -87,7 +87,7 @@ public class GestionUsuariosDialog extends JDialog {
     }
 
     private void abrirFormularioUsuario() {
-        Window owner = SwingUtilities.getWindowAncestor(this); // obtiene el Window padre
+        Window owner = SwingUtilities.getWindowAncestor(this);
         UsuarioDialog dialog = new UsuarioDialog(owner, usuarioLogueado); // nuevo usuario
         dialog.setVisible(true);
         cargarUsuariosEnTabla(); 

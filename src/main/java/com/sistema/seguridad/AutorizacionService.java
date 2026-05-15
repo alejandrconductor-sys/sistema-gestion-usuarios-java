@@ -1,36 +1,7 @@
 package com.sistema.seguridad;
-
-import java.util.*;
-
 import com.sistema.modelo.Usuario;
 
 public class AutorizacionService {
-
-    private final Map<String, Set<Permiso>> permisosPorRol = new HashMap<>();
-
-    public AutorizacionService() {
-        configurarPermisos();
-    }
-
-    private void configurarPermisos() {
-
-        // ADMIN → todos los permisos
-        permisosPorRol.put("ADMIN", EnumSet.allOf(Permiso.class));
-
-        // RRHH
-        permisosPorRol.put("RRHH", EnumSet.of(
-                Permiso.USUARIO_VER,
-                Permiso.USUARIO_EDITAR,
-                Permiso.USUARIO_APROBAR,
-                Permiso.USUARIO_DESACTIVAR
-        ));
-
-        // USUARIO
-        permisosPorRol.put("USUARIO", EnumSet.of(
-                Permiso.USUARIO_VER,
-                Permiso.USUARIO_EDITAR
-        ));
-    }
 
     public boolean tienePermiso(Usuario usuario, Permiso permiso) {
 
@@ -38,11 +9,46 @@ public class AutorizacionService {
             return false;
         }
 
-        String nombreRol = usuario.getRol().getNombre();
+        String rol = usuario.getRol().getNombre();
 
-        Set<Permiso> permisos = permisosPorRol.get(nombreRol);
+        if ("ADMIN".equals(rol)) {
+            return true;
+        }
 
-        return permisos != null && permisos.contains(permiso);
+        if ("GERENTE_VENTAS".equals(rol)) {
+            return switch (permiso) {
+                case USUARIO_DESACTIVAR -> true;
+                case VENTA_ANULAR -> true;
+                case INVENTARIO_AJUSTAR -> true;
+                default -> false;
+            };
+        }
+
+        if ("VENDEDOR".equals(rol)) {
+            return permiso == Permiso.VENTA_CREAR;
+        }
+
+        return false;
     }
-}
 
+    public boolean esAdmin(Usuario usuario) {
+
+        if (usuario == null || usuario.getRol() == null) {
+            return false;
+        }
+
+        return "ADMIN"
+                .equalsIgnoreCase(usuario.getRol().getNombre());
+    }
+
+    public boolean esGerente(Usuario usuario) {
+
+        if (usuario == null || usuario.getRol() == null) {
+            return false;
+        }
+
+        return "GERENTE_VENTAS"
+                .equalsIgnoreCase(usuario.getRol().getNombre());
+    }
+
+}
