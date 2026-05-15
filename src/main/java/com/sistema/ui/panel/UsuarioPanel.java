@@ -41,8 +41,9 @@ public class UsuarioPanel extends JPanel {
         btnNuevo = new JButton("Nuevo Usuario");
         btnEditar = new JButton("Editar Usuario");
 
-        // NUEVO
+        aplicarPermisosUI();
 
+        // NUEVO
         btnNuevo.addActionListener(e -> {
         UsuarioDialog dialog = new UsuarioDialog(owner, usuarioLogueado);
         dialog.setVisible(true);
@@ -71,11 +72,21 @@ public class UsuarioPanel extends JPanel {
             refrescarTabla();
         });
 
+
         panel.add(btnNuevo);
         panel.add(btnEditar);
 
         return panel;
     }
+
+    private void aplicarPermisosUI() {
+        String rol = usuarioLogueado.getRol().getNombre();
+
+        if (rol.equals("VENDEDOR")) {
+            btnNuevo.setVisible(false);
+        }
+    }
+
 
     private void refrescarTabla() {
         if (tableModel != null) {
@@ -84,7 +95,7 @@ public class UsuarioPanel extends JPanel {
         }
     }
 
-    // 🔐 CONTROL DE BOTONES POR ROL
+    // CONTROL DE BOTONES POR ROL
     private void aplicarPermisos() {
 
         String rol = usuarioLogueado.getRol().getNombre();

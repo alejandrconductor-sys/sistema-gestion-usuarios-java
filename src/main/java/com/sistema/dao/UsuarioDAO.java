@@ -9,247 +9,253 @@ import java.util.List;
 
 public class UsuarioDAO {
 
-    // LISTAR TODOS
+    // LISTADOS
     public List<Usuario> listarTodos() {
-        String sql = """
+        String sql = baseQuery() + "";
+        return ejecutarConsulta(sql, null);
+    }
+
+    public List<Usuario> listarPorRol(String nombreRol) {
+        String sql = baseQuery() + " WHERE r.nombre = ?";
+        return ejecutarConsulta(sql, nombreRol);
+    }
+
+    public List<Usuario> listarRRHHyUsuarios() {
+        String sql = baseQuery() + " WHERE r.nombre IN ('RRHH','VENDEDOR','GERENTE_VENTAS')";
+        return ejecutarConsulta(sql, null);
+    }
+
+    public List<Usuario> listarVendedores() {
+        String sql = baseQuery() + " WHERE r.id_rol = ?";
+        
+        Rol rol = buscarRolPorNombre("VENDEDOR");
+        
+        return ejecutarConsulta(sql, rol.getIdRol());
+    }
+
+    public Usuario buscarPorId(int idUsuario) {
+        String sql = baseQuery() + " WHERE u.id_usuario = ?";
+        List<Usuario> lista = ejecutarConsulta(sql, idUsuario);
+        return lista.isEmpty() ? null : lista.get(0);
+    }
+
+    public Usuario buscarPorEmail(String email) {
+        String sql = baseQuery() + " WHERE u.email = ?";
+        List<Usuario> lista = ejecutarConsulta(sql, email);
+        return lista.isEmpty() ? null : lista.get(0);
+    }
+
+    private String baseQuery() {
+        return """
             SELECT u.*, r.id_rol, r.nombre AS nombre_rol
             FROM usuario u
             LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario
             LEFT JOIN rol r ON ur.id_rol = r.id_rol
-            """;
-        return ejecutarConsulta(sql, null);
+        """;
     }
 
-    // LISTAR RRHH Y USUARIO
-    public List<Usuario> listarRRHHyUsuarios() {
-        String sql =
-            "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password, u.estado, " +
-            "r.id_rol, r.nombre AS nombre_rol " +
-            "FROM usuario u " +
-            "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
-            "LEFT JOIN rol r ON ur.id_rol = r.id_rol " +
-            "WHERE r.nombre IN ('RRHH','USUARIO')";
-        return ejecutarConsulta(sql, null);
-    }
+    // EJECUTOR GENERICO
+    private List<Usuario> ejecutarConsulta(String sql, Object parametro) {
 
-    // LISTAR POR ID
-    public List<Usuario> listarPorId(int idUsuario) {
-        String sql =
-            "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password, u.estado, " +
-            "r.id_rol, r.nombre AS nombre_rol " +
-            "FROM usuario u " +
-            "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
-            "LEFT JOIN rol r ON ur.id_rol = r.id_rol " +
-            "WHERE u.id_usuario = ?";
-        return ejecutarConsulta(sql, idUsuario);
-    }
-
-    // MÉTODO PRIVADO REUTILIZABLE
-     private List<Usuario> ejecutarConsulta(String sql, Object parametro) {
-        List<Usuario> usuarios = new ArrayList<>();
+        List<Usuario> lista = new ArrayList<>();
 
         try (Connection conn = Conexion.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        if (sql.contains("?")) {
-            if (parametro == null) {
-                throw new RuntimeException("Se requiere un parámetro pero se pasó null: " + sql);
-            }
-            if (parametro instanceof Integer) ps.setInt(1, (Integer)parametro);
-            else if (parametro instanceof String) ps.setString(1, (String)parametro);
-        }
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Usuario u = new Usuario();
-                    u.setIdUsuario(rs.getInt("id_usuario"));
-                    u.setNombre(rs.getString("nombre"));
-                    u.setApellido(rs.getString("apellido"));
-                    u.setEmail(rs.getString("email"));
-                    u.setPassword(rs.getString("password"));
-                    u.setEstado(EstadoUsuario.valueOf(rs.getString("estado")));
-                    int idRol = rs.getInt("id_rol");
-                    String nombreRol = rs.getString("nombre_rol");
-                if (idRol > 0) u.setRol(new Rol(idRol, nombreRol));
-                    usuarios.add(u);
+            if (parametro != null) {
+                if (parametro instanceof Integer) {
+                    ps.setInt(1, (Integer) parametro);
+                } else if (parametro instanceof String) {
+                    ps.setString(1, (String) parametro);
                 }
             }
 
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al ejecutar consulta", e);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                lista.add(mapearUsuario(rs));
+            }
+
+        }catch (SQLException e) {
+
+            e.printStackTrace();
+
+            throw new RuntimeException(
+                "Error en consulta UsuarioDAO: " + e.getMessage(), e
+            );
         }
 
-        return usuarios;
+        return lista;
     }
 
-// GUARDAR
+    // MAPPER
+    private Usuario mapearUsuario(ResultSet rs) throws SQLException {
+
+        Usuario u = new Usuario();
+
+        u.setIdUsuario(rs.getInt("id_usuario"));
+        u.setNombre(rs.getString("nombre"));
+        u.setApellido(rs.getString("apellido"));
+        u.setEmail(rs.getString("email"));
+        u.setPassword(rs.getString("password"));
+        u.setEstado(EstadoUsuario.valueOf(rs.getString("estado")));
+
+        int idRol = rs.getInt("id_rol");
+        String nombreRol = rs.getString("nombre_rol");
+
+        if (idRol > 0 && nombreRol != null) {
+            u.setRol(new Rol(idRol, nombreRol));
+        }
+
+        return u;
+    }
+
     public Usuario guardar(Usuario usuario) {
-        String sqlUsuario =
-            "INSERT INTO usuario (nombre, apellido, email, password, estado) VALUES (?, ?, ?, ?, ?)";
-        String sqlUsuarioRol =
-            "INSERT INTO usuario_rol (id_usuario, id_rol) VALUES (?, ?)";
+
+        String sqlUsuario = """
+            INSERT INTO usuario (nombre, apellido, email, password, estado)
+            VALUES (?, ?, ?, ?, ?)
+        """;
+
+        String sqlRol = """
+            INSERT INTO usuario_rol (id_usuario, id_rol)
+            VALUES (?, ?)
+        """;
 
         try (Connection conn = Conexion.getConnection()) {
+
             conn.setAutoCommit(false);
 
-            try (PreparedStatement psUsuario = conn.prepareStatement(sqlUsuario, Statement.RETURN_GENERATED_KEYS)) {
-                psUsuario.setString(1, usuario.getNombre());
-                psUsuario.setString(2, usuario.getApellido());
-                psUsuario.setString(3, usuario.getEmail());
-                psUsuario.setString(4, usuario.getPassword());
-                psUsuario.setString(5, usuario.getEstado().name());
-                psUsuario.executeUpdate();
+            try (PreparedStatement ps = conn.prepareStatement(sqlUsuario, Statement.RETURN_GENERATED_KEYS)) {
 
-                ResultSet rs = psUsuario.getGeneratedKeys();
+                ps.setString(1, usuario.getNombre());
+                ps.setString(2, usuario.getApellido());
+                ps.setString(3, usuario.getEmail());
+                ps.setString(4, usuario.getPassword());
+                ps.setString(5, usuario.getEstado().name());
+
+                ps.executeUpdate();
+
+                ResultSet rs = ps.getGeneratedKeys();
                 if (rs.next()) {
                     usuario.setIdUsuario(rs.getInt(1));
-                } else {
-                    throw new RuntimeException("No se generó el ID del usuario");
                 }
             }
 
-            try (PreparedStatement psRol = conn.prepareStatement(sqlUsuarioRol)) {
-                psRol.setInt(1, usuario.getIdUsuario());
-                psRol.setInt(2, usuario.getRol().getIdRol());
-                psRol.executeUpdate();
+            try (PreparedStatement ps = conn.prepareStatement(sqlRol)) {
+                ps.setInt(1, usuario.getIdUsuario());
+                ps.setInt(2, usuario.getRol().getIdRol());
+                ps.executeUpdate();
             }
 
             conn.commit();
             return usuario;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al guardar usuario", e);
+            throw new RuntimeException("Error guardando usuario", e);
         }
     }
 
-    // ACTUALIZAR
     public void actualizar(Usuario usuario) {
-        String sqlUsuario =
-            "UPDATE usuario SET nombre=?, apellido=?, email=?, password=?, estado=? WHERE id_usuario=?";
-        String sqlRol =
-            "UPDATE usuario_rol SET id_rol=? WHERE id_usuario=?";
+
+        String sqlUsuario = """
+            UPDATE usuario
+            SET nombre=?, apellido=?, email=?, password=?, estado=?
+            WHERE id_usuario=?
+        """;
+
+        String sqlRol = """
+            UPDATE usuario_rol
+            SET id_rol=?
+            WHERE id_usuario=?
+        """;
 
         try (Connection conn = Conexion.getConnection()) {
+
             conn.setAutoCommit(false);
 
             try (PreparedStatement ps = conn.prepareStatement(sqlUsuario)) {
+
                 ps.setString(1, usuario.getNombre());
                 ps.setString(2, usuario.getApellido());
                 ps.setString(3, usuario.getEmail());
                 ps.setString(4, usuario.getPassword());
                 ps.setString(5, usuario.getEstado().name());
                 ps.setInt(6, usuario.getIdUsuario());
+
                 ps.executeUpdate();
             }
 
-            try (PreparedStatement psRol = conn.prepareStatement(sqlRol)) {
-                psRol.setInt(1, usuario.getRol().getIdRol());
-                psRol.setInt(2, usuario.getIdUsuario());
-                psRol.executeUpdate();
+            try (PreparedStatement ps = conn.prepareStatement(sqlRol)) {
+
+                ps.setInt(1, usuario.getRol().getIdRol());
+                ps.setInt(2, usuario.getIdUsuario());
+
+                ps.executeUpdate();
             }
 
             conn.commit();
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al actualizar usuario", e);
+            throw new RuntimeException("Error actualizando usuario", e);
         }
     }
 
-    // DESACTIVAR
     public void desactivarUsuario(int idUsuario) {
         String sql = "UPDATE usuario SET estado='DESACTIVADO' WHERE id_usuario=?";
+
         try (Connection conn = Conexion.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, idUsuario);
             ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error al desactivar usuario", e);
-        }
-    }
-
-    // BUSCAR POR EMAIL
-    public Usuario buscarPorEmail(String email) {
-        String sql =
-            "SELECT u.*, r.id_rol, r.nombre AS nombre_rol " +
-            "FROM usuario u " +
-            "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
-            "LEFT JOIN rol r ON ur.id_rol = r.id_rol " +
-            "WHERE u.email = ?";
-
-        try (Connection conn = Conexion.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-                ps.setString(1, email);
-
-            try (ResultSet rs = ps.executeQuery()) {
-
-            if (rs.next()) {
-                Usuario u = new Usuario();
-                u.setIdUsuario(rs.getInt("id_usuario"));
-                u.setNombre(rs.getString("nombre"));
-                u.setApellido(rs.getString("apellido"));
-                u.setEmail(rs.getString("email"));
-                u.setPassword(rs.getString("password"));
-                u.setEstado(EstadoUsuario.valueOf(rs.getString("estado")));
-
-                int idRol = rs.getInt("id_rol");
-                String nombreRol = rs.getString("nombre_rol");
-
-                if (idRol > 0) {
-                    u.setRol(new Rol(idRol, nombreRol));
-                }
-
-                return u;
-            }
-
-        }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al buscar usuario por email", e);
+            throw new RuntimeException("Error desactivando usuario", e);
         }
-
-        return null;
     }
 
     public boolean existeEmail(String email) {
+
         String sql = "SELECT COUNT(*) FROM usuario WHERE email = ?";
+
         try (Connection conn = Conexion.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, email);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1) > 0;
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
             }
+
         } catch (SQLException e) {
             throw new RuntimeException("Error verificando email", e);
         }
+
         return false;
     }
 
-    public Usuario buscarPorId(int idUsuario) {
-        String sql =
-            "SELECT u.*, r.id_rol, r.nombre AS nombre_rol " +
-            "FROM usuario u " +
-            "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
-            "LEFT JOIN rol r ON ur.id_rol = r.id_rol " +
-            "WHERE u.id_usuario = ?";
-        List<Usuario> resultados = ejecutarConsulta(sql, idUsuario);
-        return resultados.isEmpty() ? null : resultados.get(0);
-    }
-
     public Rol buscarRolPorNombre(String nombreRol) {
+
         String sql = "SELECT * FROM rol WHERE nombre = ?";
+
         try (Connection conn = Conexion.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, nombreRol);
-        try (ResultSet rs = ps.executeQuery()) {
+
+            ResultSet rs = ps.executeQuery();
+
             if (rs.next()) {
                 return new Rol(rs.getInt("id_rol"), rs.getString("nombre"));
             }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error buscando rol", e);
         }
-    } catch (SQLException e) {
-        throw new RuntimeException("Error al buscar rol por nombre", e);
-    }
+
         return null;
     }
-
 }

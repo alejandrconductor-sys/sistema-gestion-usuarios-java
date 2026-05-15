@@ -3,6 +3,16 @@ import java.time.LocalDateTime;
 
 public class Usuario {
 
+    private Integer id;
+    private String nombre;
+    private String apellido;
+    private String email;
+    private String password;
+    private Rol rol;
+    private EstadoUsuario estado;
+    private Integer aprobadoPor;
+    private LocalDateTime fechaAprobacion;
+
     public Usuario() {
     }
 
@@ -89,18 +99,8 @@ public class Usuario {
         this.rol = rol;
     }
 
-    public String toString(){
-        return nombre+" - "+email+"(" +rol+ ")";
+    public String toString() {
+        return nombre + " " + apellido;
     }
-
-    private Integer id;
-    private String nombre;
-    private String apellido;
-    private String email;
-    private String password;
-    private Rol rol;
-    private EstadoUsuario estado;
-    private Integer aprobadoPor;
-    private LocalDateTime fechaAprobacion;
     
 }

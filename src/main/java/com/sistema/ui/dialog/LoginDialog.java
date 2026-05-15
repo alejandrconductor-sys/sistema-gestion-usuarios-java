@@ -1,7 +1,6 @@
 package com.sistema.ui.dialog;
 import java.awt.*;
 import javax.swing.*;
-import com.sistema.modelo.EstadoUsuario;
 import com.sistema.modelo.Usuario;
 import com.sistema.servicio.UsuarioServicio;
 import com.sistema.ui.MainFrame;

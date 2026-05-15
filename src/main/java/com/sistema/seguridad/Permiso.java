@@ -2,10 +2,11 @@ package com.sistema.seguridad;
 
 public enum Permiso {
 
-    USUARIO_VER,
-    USUARIO_EDITAR,
     USUARIO_CREAR,
-    USUARIO_APROBAR,
+    USUARIO_EDITAR,
     USUARIO_DESACTIVAR,
-    ADMIN_GESTIONAR
+    VENTA_CREAR,
+    VENTA_ANULAR,
+    INVENTARIO_VER,
+    INVENTARIO_AJUSTAR
 }
