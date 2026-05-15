@@ -128,7 +128,8 @@ Interfaz gráfica desarrollada con Java Swing.
 
 ## Video Windows + Power BI v1.1
 
-Próximamente disponible.
+[https://youtu.be/rSWgHgdI0ZM?si=A5jFfastGb-ru-uS](https://youtu.be/rSWgHgdI0ZM?si=A5jFfastGb-ru-uS)
+
 
 ---
 
