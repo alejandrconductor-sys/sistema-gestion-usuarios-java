@@ -124,7 +124,7 @@ Interfaz gráfica desarrollada con Java Swing.
 
 ## Video Ubuntu v1.1
 
-Próximamente disponible.
+[https://youtu.be/pkwZILdB7-Y?si=DyOZ5_8fZtCsk9r0](https://youtu.be/pkwZILdB7-Y?si=DyOZ5_8fZtCsk9r0)
 
 ## Video Windows + Power BI v1.1
 
